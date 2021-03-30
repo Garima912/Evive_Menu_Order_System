@@ -2,31 +2,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Breakfast extends Meal{
-    public ArrayList<Order> orders;
-    public ArrayList<String> orderItems;
-    private HashMap<String, String> compulsory;
+public class Breakfast extends Meal {
+
+    private ArrayList<Order> orders;  // contains objects of each FoodItem that has been ordered
+    private ArrayList<String> orderItems;
+    private HashMap<String, String> compulsory; // contains Breakfast compulsory Menu items mapped with their respective names
 
     public Breakfast(ArrayList<String> orderItems) {
         this.orderItems = orderItems;
         compulsory = new HashMap<>();
         compulsory.put("1","Main");
         compulsory.put("2", "Side");
-//        frequencies = computeFrequencies(orderItems);
-        System.out.println(frequencies);
     }
 
     @Override
     protected boolean isValidMultiple(ArrayList<String> itemIds) {
-        frequencies = computeFrequencies(orderItems);
-        for(Map.Entry<String,Integer> item: frequencies.entrySet()){
+        frequencies = computeFrequencies(orderItems);  // map each ItemId with its quantities
+
+        for(Map.Entry<String,Integer> item: frequencies.entrySet()){ //traverse in the map to look for keys except Coffee having >1 values
             if( !item.getKey().equals("3") && item.getValue() > 1){
-                return false;
+                return false;  // invalid multiple found
             }
         }
-        return true;
+        return true;  // all quantities in the order are valid
     }
 
+    //checks whether an item has already been added to the final order
     boolean checkDuplicate(Order newOrder){
         for (Order order: orders) {
             if (newOrder.equals(order)){
@@ -36,6 +37,7 @@ public class Breakfast extends Meal{
         return  false;
     }
 
+    // This method is used to print out any error messages when user orders multiple items except Drink
     private void printInvalidMultiples(){
         String [] allItems = {"Main","Side","Drink"};
 
@@ -47,6 +49,7 @@ public class Breakfast extends Meal{
 
     }
 
+    //This method is used to print out any error messages when user doesn't order a compulsory item: a main and side dish
     private void printMissingItems(){
         for(Map.Entry<String,String> itemID: compulsory.entrySet()){
             if(!orderItems.contains(itemID.getKey())){
@@ -55,40 +58,42 @@ public class Breakfast extends Meal{
         }
     }
 
+    //Processes and prints the order if valid
     @Override
     public void makeOrder(ArrayList<String> itemIds) {
 
         orders = new ArrayList<>();
+        //create objects of the three food items being offered in Breakfast
         FoodItem mainDish = new FoodItem("Eggs");
         FoodItem sideDish =  new FoodItem("Toast");
-        FoodItem drinks = new FoodItem("Water");
+        FoodItem drinks = new FoodItem("Water");  //default drink is water, in case no drink was explicitly ordered
 
-        if(validateOrderInput(itemIds)){
-            for(String item: itemIds){
+        if(validateOrderInput(itemIds)){  // order is valid: follows all menu rules
+            for(String item: itemIds){  // traverse through the list of ordered IDs
 
                 switch (item){
                     case "1":
-                        orders.add(mainDish);
+                        orders.add(mainDish);  // add main dish to the order
                         break;
                     case "2":
-                        orders.add(sideDish);
+                        orders.add(sideDish);  // add side dish to the order
                         break;
                     case "3":
-                        if(!checkDuplicate(drinks)){   // does not contain side dish
+                        if(!checkDuplicate(drinks)){   //drinks can be ordered multiple times, so just add once.
                             drinks =  new FoodItem("Coffee");
-                            orders.add(drinks);          // add side dish in the orders
+                            orders.add(drinks);
                         }
-                        orders.get(2).setQuantity(orders.get(2).getQuantity()+1);  // for multiple side dishes, increment quantity
+                        orders.get(2).setQuantity(orders.get(2).getQuantity()+1);  //increment quantity when added multiple times
                         break;
                 }
 
             }
-            if(!orders.contains(drinks)){
+            if(!orders.contains(drinks)){  // no drink was ordered then add water to the order
                 orders.add(drinks);
             }
-            printOrder();
+            System.out.println(printOrder());
         }
-        else{
+        else{                             // deal with invalid cases: invalid multiples and missing out must-have items for order
             System.out.print("Unable to process: ");
             if(!hasCompulsoryItems(orderItems)){
                 printMissingItems();
@@ -100,6 +105,7 @@ public class Breakfast extends Meal{
 
     }
 
+    //This method comes in most use when trying to test the returned order
     public String printOrder(){
         String order = "";
         for (int i=0; i<orders.size(); i++) {

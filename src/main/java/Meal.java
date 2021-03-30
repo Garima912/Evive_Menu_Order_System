@@ -1,10 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
+//Parent class to all the three meal types: Breakfast, Lunch an Dinner classes
 public class Meal {
 
     protected HashMap<String,Integer> frequencies = new HashMap<>();
 
+    //returns a map with item IDs as key and their respective quantities ordered as value.
     protected HashMap<String, Integer> computeFrequencies(ArrayList<String> itemIds){
 
         for(String s: itemIds){
@@ -13,7 +15,7 @@ public class Meal {
                 continue;
             }
             else{
-                frequencies.put(s, frequencies.get(s)+1);
+                frequencies.put(s, frequencies.get(s)+1); //increase quantity of an item
             }
         }
         return  frequencies;
@@ -40,7 +42,7 @@ public class Meal {
         return false;
     }
 
-    // prints out the order if it is valid
+    // prints out the order if it is valid or else returns meaningful error messages
     public void makeOrder(ArrayList<String> itemIds){
 
     }
